@@ -85,26 +85,6 @@ Tile.prototype.mouseInside = function () {
     mouseY < (this.y + this.width);
 };
 
-// Flip Tiles face up. Ad MouseClicked function; keep track of number of tiles flipped and store in global variable; execute function only if number of tiles flipped is < 2; only exectue if FaceIsDown is true (so when a tile is clicked twice, the user can still flip another tile); loop() makes the code in draw run continously
-var flippedTiles = [];
-var frameCountSecondClick = 0;
-mouseClicked = function () {
-    for (var i=0; i < tiles.length; i++) {
-        if (tiles[i].mouseInside() && flippedTiles.length < 2 && tiles[i].FaceIsDown) {
-            tiles[i].drawFaceUp();
-            flippedTiles.push(tiles[i]);
-            if (flippedTiles[0].randomImages === flippedTiles[1].randomImages) {
-                flippedTiles[0].isMatch = true;
-                flippedTiles[1].isMatch = true;
-            }
-            if (flippedTiles.length === 2) {
-                frameCountSecondClick = frameCount;
-                loop();
-            }
-        }
-    }
-};
-
 // Flip Tiles back face down automatically. Compare time elapsed after the second tile has been flipped over; this is done by comparing 2 points in time: 1. point in time right now and point in time of the second tile click; if time difference is higher than x frames, then draw all tiles face down; reset numTilesFlipped and frameCountSecondClick to 0 to allow process to be started over again; noLoop() stops the code running in draw()
 draw = function() {
     if (frameCount-frameCountSecondClick > 70) {
