@@ -12,9 +12,13 @@ var images = [
     getImage("avatars/robot_female_2")
 ];
 
+// Global var for number of columns/rows
+var numCol = 2;
+var numRow = 2;
+
 // Create array with 2 copies of each image, 20 images total
 var randomImages = [];
-for (var i=0; i < 10; i++) {
+for (var i=0; i < (numCol * numRow)/2; i++) {
     
     // Create a random number 1-10, and store in a variable to use an an index later
     var randomNumber = floor(random(images.length));
@@ -65,8 +69,9 @@ Tile.prototype.drawFaceDown = function() {
 
 // Create array of objects of tiles
 var tiles = [];
-for (var i = 0; i < 4; i++) {
-    for (var j = 0; j < 5; j++) {
+
+for (var i = 0; i <numCol; i++) {
+    for (var j = 0; j <numRow; j++) {
 tiles.push(new Tile (50 + i*60, 50 + j*60, 50, randomImages.pop()));
 }
 }
@@ -88,6 +93,8 @@ Tile.prototype.mouseInside = function () {
 // Flip Tiles face up. Ad MouseClicked function; keep track of number of tiles flipped and store in global variable; execute function only if number of tiles flipped is < 2; only exectue if FaceIsDown is true (so when a tile is clicked twice, the user can still flip another tile); loop() makes the code in draw run continously
 var flippedTiles = [];
 var frameCountSecondClick = 0;
+var numTries = 0;
+
 mouseClicked = function () {
     for (var i=0; i < tiles.length; i++) {
         if (tiles[i].mouseInside() && flippedTiles.length < 2 && tiles[i].FaceIsDown) {
@@ -98,16 +105,41 @@ mouseClicked = function () {
                 flippedTiles[1].isMatch = true;
             }
             if (flippedTiles.length === 2) {
+                numTries++;
                 frameCountSecondClick = frameCount;
                 loop();
             }
         }
     }
+    // Display message when all paris have been found
+            var foundAllMatches = true;
+            for (var i = 0; i < tiles.length; i++){
+                foundAllMatches = foundAllMatches && tiles[i].isMatch;
+            }
+            if (foundAllMatches) {
+                
+                var rectX = 200;
+                var rectY = 200;
+                var rectW = 350;
+                var rectH = 200;
+                
+                fill(250, 182, 250);
+                strokeWeight(5);
+                rectMode(CENTER);
+                rect(rectX, rectY, rectW, rectH, 10);
+                
+                var myFont = createFont("monospace");
+                textFont(myFont, 20);
+                textAlign(CENTER, CENTER);
+                fill(14, 71, 0);
+                text("Whoohoo! You found all pairs! It took you " + numTries + " tries.", 100, 133, 200, 131);
+            }
 };
+
 
 // Flip Tiles back face down automatically. Compare time elapsed after the second tile has been flipped over; this is done by comparing 2 points in time: 1. point in time right now and point in time of the second tile click; if time difference is higher than x frames, then draw all tiles face down; reset numTilesFlipped and frameCountSecondClick to 0 to allow process to be started over again; noLoop() stops the code running in draw()
 draw = function() {
-    if (frameCount-frameCountSecondClick > 70) {
+    if (frameCount-frameCountSecondClick > 50) {
         for (var i = 0; i < tiles.length; i++) {
             if (!tiles[i].isMatch) {
                 tiles[i].drawFaceDown();
@@ -118,6 +150,9 @@ draw = function() {
         noLoop();
     }
 };
+
+
+
 
 
 /* 
